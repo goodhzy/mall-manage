@@ -1,4 +1,4 @@
-import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import {  PlusOutlined } from '@ant-design/icons';
 import { Button, message, Divider, Switch, Modal } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
@@ -6,8 +6,7 @@ import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
 import SetPermissonForm from './components/setPermissonForm';
-import { queryUserList, putUserType, addUser, putUser, delUser,setUserPer } from './service';
-import styles from './style.less';
+import { queryUserList, putUserType, addUser, putUser, delUser, setUserPer } from './service';
 
 /**
  * 添加节点
@@ -45,7 +44,7 @@ const handleUpdate = async (fields) => {
 
 const handleDel = async ({ id }, actionRef) => {
   Modal.confirm({
-    content: '是否删除该条用户数据',
+    content: '此操作将永久删除该用户, 是否继续?',
     onOk: async () => {
       try {
         await delUser(id);
@@ -81,16 +80,15 @@ const onTypeChange = async (uId, type) => {
  * @param id 用户id
  * @param rid 角色id
  */
-const handleSetPer = async ({id,rid})=>{
+const handleSetPer = async ({ id, rid }) => {
   try {
-    await setUserPer({id,rid})
-    message.success('更新权限成功')
-    return true
+    await setUserPer({ id, rid });
+    message.success('更新权限成功');
+    return true;
   } catch (error) {
-    return false
+    return false;
   }
-}
-
+};
 
 const TableList = () => {
   const [createModalVisible, handleModalVisible] = useState(false);
@@ -193,7 +191,6 @@ const TableList = () => {
       ],
     },
   ];
-
   return (
     <PageHeaderWrapper>
       <ProTable
@@ -206,7 +203,6 @@ const TableList = () => {
         ]}
         request={(params, sorter, filter) => queryUserList({ ...params, sorter, filter })}
         columns={columns}
-        rowSelection={{}}
       />
       {createModalVisible && (
         <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
@@ -270,8 +266,7 @@ const TableList = () => {
             handlePerModalVisible(false);
             setFormValues({});
           }}
-        >
-        </SetPermissonForm>
+         />
       )}
     </PageHeaderWrapper>
   );

@@ -1,18 +1,17 @@
 import request from '@/utils/request';
-import {qs} from 'querystring'
 
-export async function queryUserList(params) {
-  const res = await request('users', {
+export async function queryGoodsList(params) {
+  const res = await request('goods', {
     params:{
       pagenum: params.current,
       pagesize: params.pageSize,
-      query: params.username
+      query: params.goods_name
     },
   });
   return {
-    data: res.data.users,
-    total: res.data.totalpage,
-    success: !res.errno
+    data: res.data.goods,
+    total: res.data.total,
+    success: res.meta.status === 200
   }
 }
 
@@ -30,8 +29,8 @@ export async function putUser({id,username,...restparmas}){
   })
 }
 
-export async function delUser(id){
-  return request(`users/${id}`,{
+export async function delGoods(id){
+  return request(`goods/${id}`,{
     method: 'DELETE',
   })
 }

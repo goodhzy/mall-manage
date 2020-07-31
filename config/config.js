@@ -78,15 +78,59 @@ export default defineConfig({
               component: './ListTableList',
             },
             {
-              name: 'userManage',
+              name: '用户管理',
               icon: 'table',
-              path: '/userList',
+              path: './userManage',
               routes:[
                 {
-                  name: 'userList',
+                  name: '用户列表',
                   icon: 'table',
-                  path: '/userList',
-                  component: './userList'
+                  path: '/userManage/userList',
+                  component: './userManage/userList'
+                }
+              ]
+            },
+            {
+              name: '权限管理',
+              icon: 'table',
+              path: '/permissonManage',
+              routes:[
+                {
+                  name: '角色列表',
+                  icon: 'table',
+                  path: '/permissonManage/roleList',
+                  component: './permissonManage/roleList'
+                },
+                {
+                  name: '权限列表',
+                  icon: 'table',
+                  path: '/permissonManage/permissonList',
+                  component: './permissonManage/permissonList'
+                }
+              ]
+            },
+            {
+              name: '商品管理',
+              icon: 'table',
+              path: '/goodsManage',
+              routes:[
+                {
+                  name: '商品列表',
+                  icon: 'table',
+                  path: '/goodsManage/goodsList',
+                  component: './goodsManage/goodsList'
+                },
+                {
+                  name: '分类参数',
+                  icon: 'table',
+                  path: '/goodsManage/categoryParmas',
+                  component: './goodsManage/categoryParmas'
+                },
+                {
+                  name: '商品分类',
+                  icon: 'table',
+                  path: '/goodsManage/goodsCateGory',
+                  component: './goodsManage/goodsCateGory'
                 }
               ]
             },
