@@ -1,55 +1,42 @@
 import request from '@/utils/request';
 
-export async function queryUserList(params) {
-  const res = await request('users', {
+export async function queryAttributesList({catId,...params}) {
+  const res = await request(`categories/${catId}/attributes`, {
     params:{
       pagenum: params.current,
       pagesize: params.pageSize,
-      query: params.username
+      sel: params.sel
     },
   });
   return {
-    data: res.data.users,
-    total: res.data.totalpage,
+    data: res.data,
     success: res.meta.status === 200
   }
 }
 
-export async function addUser(params){
-  return request(`users`,{
-    method: 'POST',
-    data:params
+export async function queryAttrParmasList({catId,attrId,...parmas}){
+  return request(`categories/${catId}/attributes/${attrId}`,{
+    method: 'get',
+    data:parmas
   })
 }
 
-export async function putUser({id,username,...restparmas}){
-  return request(`users/${id}`,{
+export async function putAttrParmas({catId,attrId,...restparmas}){
+  return request(`categories/${catId}/attributes/${attrId}`,{
     method: 'PUT',
     data:restparmas
   })
 }
 
-export async function delUser(id){
-  return request(`users/${id}`,{
-    method: 'DELETE',
+export async function addAttributes({catId,...restparmas}){
+  return request(`categories/${catId}/attributes`,{
+    method: 'POST',
+    data:restparmas
   })
 }
 
-export async function getRoles(){
-  return request(`roles`,{
-    method: 'GET',
-  })
-}
-
-export async function putUserType({uId,type}){
-  return request(`users/${uId}/state/${type}`,{
-    method: 'PUT',
-  })
-}
-
-export async function setUserPer({id,rid}){
-  return request(`users/${id}/role`,{
-    method: 'PUT',
-    data:{rid}
+export async function delAttributes({catId,attr_id}){
+  return request(`categories/${catId}/attributes/${attr_id}`,{
+    method: 'DELETE'
   })
 }

@@ -77,5 +77,5 @@ class AvatarDropdown extends React.Component {
 }
 
 export default connect(({ login }) => ({
-  userInfo: login.userInfo,
+  userInfo: login.userInfo ? login.userInfo : (localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : '') ,
 }))(AvatarDropdown);

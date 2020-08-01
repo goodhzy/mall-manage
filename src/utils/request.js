@@ -75,7 +75,7 @@ request.interceptors.response.use(
         console.log('断网了');
         message.error('请检查网络是否已连接');
       }
-      return;
+      return Promise.reject(error)
     }
     const {status} = error.response;
     message.error(codeMessage[status]);

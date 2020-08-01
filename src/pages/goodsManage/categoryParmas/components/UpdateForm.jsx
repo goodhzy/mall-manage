@@ -21,10 +21,8 @@ const UpdateForm = props => {
   } = props;
 
   const [formVals, setFormVals] = useState({
-    id: values.id,
-    username: values.username,
-    email: values.email,
-    mobile: values.mobile,
+    attr_id: values.attr_id,
+    attr_name: values.attr_name,
   });
   const handleSubmit = async () => {
     const fieldsValue = await form.validateFields();
@@ -36,43 +34,17 @@ const UpdateForm = props => {
     return (
       <>
         <FormItem
-          name="username"
-          label="用户账号"
+          name="attr_name"
+          label="参数名称"
           rules={[
             {
               required: true,
-              message: '请输入用户账号',
+              message: '请输入参数名称',
             },
           ]}
-          initialValue={formVals.username}
+          initialValue={formVals.attr_name}
         >
-          <Input disabled placeholder="请输入" />
-        </FormItem>
-        <FormItem
-          name="mobile"
-          label="手机号码"
-          rules={[
-            {
-              required: true,
-              message: '请输入手机号码',
-            },
-          ]}
-          initialValue={formVals.mobile}
-        >
-          <Input placeholder="请输入手机号码" />
-        </FormItem>
-        <FormItem
-          name="email"
-          label="邮箱"
-          rules={[
-            {
-              required: true,
-              message: '请输入邮箱',
-            },
-          ]}
-          initialValue={formVals.email}
-        >
-          <Input placeholder="请输入邮箱" />
+          <Input placeholder="请输入" />
         </FormItem>
       </>
     );

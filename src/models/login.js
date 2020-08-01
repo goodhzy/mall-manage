@@ -21,8 +21,8 @@ const Model = {
           type: 'setUserInfo',
           payload: response.data,
         });
-        if (response.meta.status === 200) {
           localStorage.setItem('token', response.data.token)
+          localStorage.setItem('userInfo', JSON.stringify(response.data))
           const urlParams = new URL(window.location.href);
           const params = getPageQuery();
           let { redirect } = params;
@@ -41,9 +41,7 @@ const Model = {
               return;
             }
           }
-
           history.replace(redirect || '/');
-        }
       } catch (error) {
         console.log(error);
       }
