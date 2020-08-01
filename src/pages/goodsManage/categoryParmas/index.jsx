@@ -76,7 +76,7 @@ const TableList = () => {
   const [categoryData, setCategoryData] = useState([]);
   const [activeKey, setActiveKey] = useState('1');
   const [catId, setCatId] = useState();
-  const [catAttrParmas, setCatAttrParmas] = useState('');
+  const [catAttrParmas, setCatAttrParmas] = useState({});
   const [modal, setModal] = useState(true);
   const actionRef = useRef();
   const columns = [
@@ -133,7 +133,6 @@ const TableList = () => {
   const onExpand = async (expanded, record) => {
     if (expanded) {
       try {
-        const res = await queryAttrParmasList({ catId, attrId: record.attr_id, attr_sel: 'many' });
         setCatAttrParmas(res.data.attr_vals);
       } catch (error) {
         console.log(error)
