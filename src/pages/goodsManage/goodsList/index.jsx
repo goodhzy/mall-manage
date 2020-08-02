@@ -5,8 +5,7 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
-import SetPermissonForm from './components/setPermissonForm';
-import { queryGoodsList, putUserType, addUser, putUser, delGoods, setUserPer } from './service';
+import { queryGoodsList, delGoods, putGoods,queryGoodsDec } from './service';
 
 /**
  * 添加节点
@@ -29,11 +28,12 @@ const handleAdd = async (fields) => {
 
 const handleUpdate = async (fields) => {
   try {
-    await putUser(fields);
+    // 需要先获取商品详情才能更新商品
+    const res = await queryGoodsDec(fields.goods_id)
+    await putGoods({...res.data,...fields });
     message.success('编辑成功');
     return true;
   } catch (error) {
-    message.error('配置失败请重试！');
     return false;
   }
 };
@@ -48,7 +48,7 @@ const handleDel = async ({ goods_id }, actionRef) => {
     onOk: async () => {
       try {
         await delGoods(goods_id);
-        message.success('删除成功，即将刷新');
+        message.success('删除成功');
         actionRef.current.reload();
         return true;
       } catch (error) {
@@ -58,42 +58,10 @@ const handleDel = async ({ goods_id }, actionRef) => {
   });
 };
 
-/**
- * 改变用户状态
- * @param uId 用户id
- * @param type 状态值
- */
-
-const onTypeChange = async (uId, type) => {
-  try {
-    const res = await putUserType({ uId, type });
-    if (res.meta.status === 200) {
-      message.success('更新用户状态成功');
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-/**
- * 设置用户角色
- * @param id 用户id
- * @param rid 角色id
- */
-const handleSetPer = async ({ id, rid }) => {
-  try {
-    await setUserPer({ id, rid });
-    message.success('更新权限成功');
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
 
 const TableList = () => {
   const [createModalVisible, handleModalVisible] = useState(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
-  const [perModalVisible, handlePerModalVisible] = useState(false);
   const [FormValues, setFormValues] = useState({});
   const actionRef = useRef();
   const columns = [
@@ -154,11 +122,15 @@ const TableList = () => {
       initialValue: '0',
       valueEnum: {
         0: {
-          text: '未解决',
+          text: '未通过',
           status: 'Error',
         },
         1: {
-          text: '已解决',
+          text: '审核中',
+          status: 'Processing',
+        },
+        2: {
+          text: '已审核',
           status: 'Success',
         },
       },
@@ -206,7 +178,7 @@ const TableList = () => {
     <PageHeaderWrapper>
       <ProTable
         actionRef={actionRef}
-        rowKey="id"
+        rowKey="goods_id"
         toolBarRender={() => [
           <Button type="primary" onClick={() => handleModalVisible(true)}>
             <PlusOutlined /> 新建
@@ -259,26 +231,6 @@ const TableList = () => {
           values={FormValues}
         />
       ) : null}
-      {perModalVisible && (
-        <SetPermissonForm
-          perModalVisible={perModalVisible}
-          values={FormValues}
-          onSubmit={async (value) => {
-            const success = await handleSetPer(value);
-            if (success) {
-              handlePerModalVisible(false);
-              setFormValues({});
-              if (actionRef.current) {
-                actionRef.current.reload();
-              }
-            }
-          }}
-          onCancel={() => {
-            handlePerModalVisible(false);
-            setFormValues({});
-          }}
-         />
-      )}
     </PageHeaderWrapper>
   );
 };
