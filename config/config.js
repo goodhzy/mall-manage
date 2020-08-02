@@ -131,20 +131,13 @@ export default defineConfig({
                   icon: 'table',
                   path: '/goodsManage/goodsCateGory',
                   component: './goodsManage/goodsCateGory'
-                }
-              ]
-            },
-            {
-              name: '订单管理',
-              icon: 'table',
-              path: '/orderManage',
-              routes:[
-                {
-                  name: '订单列表',
-                  icon: 'table',
-                  path: '/orderManage/orderList',
-                  component: './orderManage/orderList'
                 },
+                {
+                  name: '商品创建',
+                  icon: 'table',
+                  path: '/goodsManage/goodsAdd',
+                  component: './goodsManage/goodsList/components/CreateForm'
+                }
               ]
             },
             {

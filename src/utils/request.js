@@ -25,8 +25,11 @@ const codeMessage = {
   504: '网关超时。',
 };
 
+const devUrl = 'http://127.0.0.1:8888/api/private/v1/'
+const prdUrl = 'https://yystudy.top:8888/api/private/v1/'
+
 const request = axios.create({
-  baseURL: process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:8888/api/private/v1/' : 'https://yystudy.top',
+  baseURL: process.env.NODE_ENV === 'development' ? devUrl : prdUrl,
   timeout: 5000, // request timeout
 });
 /*

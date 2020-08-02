@@ -3,8 +3,8 @@ import request from '@/utils/request';
 export async function queryAttributesList({catId,...params}) {
   const res = await request(`categories/${catId}/attributes`, {
     params:{
-      pagenum: params.current,
-      pagesize: params.pageSize,
+      pagenum: params.current ? params.current : undefined,
+      pagesize: params.pageSize ? params.pageSize : undefined,
       sel: params.sel
     },
   });

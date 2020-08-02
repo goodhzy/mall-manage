@@ -1,26 +1,12 @@
+import {history} from 'umi'
 import {  PlusOutlined } from '@ant-design/icons';
 import { Button, message, Divider, Modal } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
 import { queryGoodsList, delGoods, putGoods,queryGoodsDec } from './service';
 
-/**
- * 添加节点
- * @param fields
- */
-
-const handleAdd = async (fields) => {
-  try {
-    await addUser({ ...fields });
-    message.success('添加成功');
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
 /**
  * 更新节点
  * @param fields
@@ -60,7 +46,6 @@ const handleDel = async ({ goods_id }, actionRef) => {
 
 
 const TableList = () => {
-  const [createModalVisible, handleModalVisible] = useState(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
   const [FormValues, setFormValues] = useState({});
   const actionRef = useRef();
@@ -161,54 +146,20 @@ const TableList = () => {
       ),
     },
   ];
-  const restCreateColumns = [
-    {
-      title: '用户密码',
-      dataIndex: 'password',
-      hideInSearch: true,
-      rules: [
-        {
-          required: true,
-          message: '用户密码为必填项',
-        },
-      ],
-    },
-  ];
+
   return (
     <PageHeaderWrapper>
       <ProTable
         actionRef={actionRef}
         rowKey="goods_id"
         toolBarRender={() => [
-          <Button type="primary" onClick={() => handleModalVisible(true)}>
+          <Button type="primary" onClick={() => history.push('/goodsManage/goodsAdd')}>
             <PlusOutlined /> 新建
           </Button>,
         ]}
         request={(params, sorter, filter) => queryGoodsList({ ...params, sorter, filter })}
         columns={columns}
       />
-      {createModalVisible && (
-        <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
-          <ProTable
-            onSubmit={async (value) => {
-              const success = await handleAdd(value);
-
-              if (success) {
-                handleModalVisible(false);
-
-                if (actionRef.current) {
-                  actionRef.current.reload();
-                }
-              }
-            }}
-            rowKey="key"
-            type="form"
-            columns={[...columns, ...restCreateColumns]}
-            rowSelection={{}}
-          />
-        </CreateForm>
-      )}
-
       {updateModalVisible && FormValues && Object.keys(FormValues).length ? (
         <UpdateForm
           onSubmit={async (value) => {
