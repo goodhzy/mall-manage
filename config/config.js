@@ -135,6 +135,19 @@ export default defineConfig({
               ]
             },
             {
+              name: '订单管理',
+              icon: 'table',
+              path: '/orderManage',
+              routes:[
+                {
+                  name: '订单列表',
+                  icon: 'table',
+                  path: '/orderManage/orderList',
+                  component: './orderManage/orderList'
+                },
+              ]
+            },
+            {
               component: './404',
             },
           ],
