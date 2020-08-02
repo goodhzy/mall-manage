@@ -131,6 +131,12 @@ export default defineConfig({
                   icon: 'table',
                   path: '/goodsManage/goodsCateGory',
                   component: './goodsManage/goodsCateGory'
+                },
+                {
+                  name: '商品创建',
+                  icon: 'table',
+                  path: '/goodsManage/goodsAdd',
+                  component: './goodsManage/goodsList/components/CreateForm'
                 }
               ]
             },

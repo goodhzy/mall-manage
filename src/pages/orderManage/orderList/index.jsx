@@ -1,11 +1,11 @@
-import {history} from 'umi'
 import {  PlusOutlined } from '@ant-design/icons';
-import { Button, message, Divider, Modal } from 'antd';
+import {  message, Divider, Modal } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
+import Logistics from './components/logistics';
 import UpdateForm from './components/UpdateForm';
-import { queryGoodsList, delGoods, putGoods,queryGoodsDec } from './service';
+import { queryOrderList, putOrder } from './service';
 
 /**
  * 更新节点
@@ -14,111 +14,74 @@ import { queryGoodsList, delGoods, putGoods,queryGoodsDec } from './service';
 
 const handleUpdate = async (fields) => {
   try {
-    // 需要先获取商品详情才能更新商品
-    const res = await queryGoodsDec(fields.goods_id)
-    await putGoods({...res.data,...fields });
+    await putOrder({...fields });
     message.success('编辑成功');
     return true;
   } catch (error) {
     return false;
   }
 };
-/**
- *  删除节点
- * @param selectedRows
- */
-
-const handleDel = async ({ goods_id }, actionRef) => {
-  Modal.confirm({
-    content: '此操作将永久删除该商品, 是否继续?',
-    onOk: async () => {
-      try {
-        await delGoods(goods_id);
-        message.success('删除成功');
-        actionRef.current.reload();
-        return true;
-      } catch (error) {
-        return false;
-      }
-    },
-  });
-};
-
 
 const TableList = () => {
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
+  const [logisticsModalVisible, handleLogisticsModalVisible] = useState(false);
   const [FormValues, setFormValues] = useState({});
   const actionRef = useRef();
   const columns = [
     {
       title: '#',
-      dataIndex: 'goods_id',
+      dataIndex: 'order_id',
       hideInSearch: true,
       hideInForm: true,
     },
     {
-      title: '商品名称',
-      dataIndex: 'goods_name',
-      rules: [
-        {
-          required: true,
-          message: '用户账号为必填项',
-        },
-      ],
+      title: '订单编号',
+      dataIndex: 'order_number',
       width: 200,
       ellipsis: true,
+      hideInForm: true,
     },
     {
-      title: '商品价格(元)',
-      dataIndex: 'goods_price',
+      title: '订单价格',
+      dataIndex: 'order_price',
       hideInSearch: true,
       valueType: 'money'
     },
     {
-      title: '商品数量',
-      dataIndex: 'goods_number',
-      hideInSearch: true,
-    },
-    {
-      title: '商品重量',
-      dataIndex: 'goods_weight',
-      hideInSearch: true,
-      hideInForm: true,
-    },
-    {
-      title: '添加时间',
-      dataIndex: 'add_time',
-      hideInSearch: true,
-      hideInForm: true,
-      valueType: 'dateTime'
-    },{
-      title: '更新时间',
-      dataIndex: 'upd_time',
-      hideInSearch: true,
-      hideInForm: true,
-      valueType: 'dateTime'
-      
-    },
-    {
-      title: '商品状态',
-      dataIndex: 'goods_state',
-      hideInSearch: true,
-      hideInForm: true,
-      initialValue: '0',
+      title: '是否付款',
+      dataIndex: 'pay_status',
       valueEnum: {
-        0: {
-          text: '未通过',
+        '0': {
+          text: '未付款',
           status: 'Error',
         },
-        1: {
-          text: '审核中',
-          status: 'Processing',
-        },
-        2: {
-          text: '已审核',
+        '1': {
+          text: '已付款',
           status: 'Success',
-        },
+        }
       },
+    },
+    {
+      title: '是否发货',
+      dataIndex: 'is_send',
+      hideInForm: true,
+      valueEnum: {
+        '否': {
+          text: '未发货',
+          status: 'Error',
+        },
+        '是': {
+          text: '已发货',
+          status: 'Success',
+        }
+      },
+    },
+    {
+      title: '支付时间',
+      dataIndex: 'create_time',
+      hideInSearch: true,
+      hideInForm: true,
+      valueType: 'dateTime'
     },
     {
       title: '操作',
@@ -137,10 +100,11 @@ const TableList = () => {
           <Divider type="vertical" />
           <a
             onClick={() => {
-              handleDel(record, actionRef);
+              handleLogisticsModalVisible(true);
+              setFormValues(record);
             }}
           >
-            删除
+            物流
           </a>
         </>
       ),
@@ -151,13 +115,8 @@ const TableList = () => {
     <PageHeaderWrapper>
       <ProTable
         actionRef={actionRef}
-        rowKey="goods_id"
-        toolBarRender={() => [
-          <Button type="primary" onClick={() => history.push('/goodsManage/goodsAdd')}>
-            <PlusOutlined /> 新建
-          </Button>,
-        ]}
-        request={(params, sorter, filter) => queryGoodsList({ ...params, sorter, filter })}
+        rowKey="order_id"
+        request={(params, sorter, filter) => queryOrderList({ ...params, sorter, filter })}
         columns={columns}
       />
       {updateModalVisible && FormValues && Object.keys(FormValues).length ? (
@@ -179,6 +138,20 @@ const TableList = () => {
             setFormValues({});
           }}
           updateModalVisible={updateModalVisible}
+          values={FormValues}
+        />
+      ) : null}
+      {logisticsModalVisible && FormValues && Object.keys(FormValues).length ? (
+        <Logistics
+          onSubmit={() => {
+            handleLogisticsModalVisible(false);
+            setFormValues({});
+          }}
+          onCancel={() => {
+            handleLogisticsModalVisible(false);
+            setFormValues({});
+          }}
+          logisticsModalVisible={logisticsModalVisible}
           values={FormValues}
         />
       ) : null}
