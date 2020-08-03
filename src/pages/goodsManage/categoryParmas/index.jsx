@@ -10,74 +10,15 @@ import { queryCategoriesListAll } from '../goodsCateGory/service';
 
 const { TabPane } = Tabs;
 
-/**
- * 添加节点
- * @param fields
- */
-
-const handleAdd = async (fields) => {
-  try {
-    await addAttributes({ ...fields,attr_sel:'many' });
-    message.success('添加成功');
-    return true;
-  } catch (error) {
-    console.log(error)
-    return false;
-  }
-};
-/**
- * 更新节点
- * @param fields
- */
-
-const handleUpdate = async ({catId,...fields}) => {
-  try {
-    const reqData = {
-      catId,
-      attrId: fields.attr_id,
-      attr_name: fields.attr_name,
-      attr_sel: 'many',
-    };
-    await putAttrParmas(reqData);
-    message.success('编辑成功');
-    return true;
-  } catch (error) {
-    console.error(error)
-    return false;
-  }
-};
-/**
- *  删除节点
- * @param selectedRows
- */
-
-const handleDel = async ({ catId,attr_id }, actionRef) => {
-  Modal.confirm({
-    content: '此操作将永久删除该数据, 是否继续?',
-    onOk: async () => {
-      try {
-        await delAttributes({catId,attr_id});
-        message.success('删除成功');
-        actionRef.current.reload();
-        return true;
-      } catch (error) {
-        console.error(error)
-        return false;
-      }
-    },
-  });
-};
-
-
 const TableList = () => {
   const [createModalVisible, handleModalVisible] = useState(false);
   const [updateModalVisible, handleUpdateModalVisible] = useState(false);
   const [FormValues, setFormValues] = useState({});
   const [categoryData, setCategoryData] = useState([]);
-  const [activeKey, setActiveKey] = useState('1');
+  const [attr_sel, setAttr_sel] = useState('many');
   const [catId, setCatId] = useState();
-  const [catAttrParmas, setCatAttrParmas] = useState({});
   const [modal, setModal] = useState(true);
+  const [addTag, setAddTag] = useState(true)
   const actionRef = useRef();
   const columns = [
     {
@@ -118,25 +59,73 @@ const TableList = () => {
             删除
           </a>
         </>
-      ),
+      )
     },
   ];
+  const handleUpdate = async ({catId,...fields}) => {
+    try {
+      const reqData = {
+        catId,
+        attrId: fields.attr_id,
+        attr_name: fields.attr_name,
+        attr_sel,
+      };
+      await putAttrParmas(reqData);
+      message.success('编辑成功');
+      return true;
+    } catch (error) {
+      console.error(error)
+      return false;
+    }
+  };
+  /**
+ * 添加节点
+ * @param fields
+ */
+
+const handleAdd = async (fields) => {
+  try {
+    await addAttributes({ ...fields,attr_sel });
+    message.success('添加成功');
+    return true;
+  } catch (error) {
+    console.log(error)
+    return false;
+  }
+};
+/**
+ * 更新节点
+ * @param fields
+ */
+
+
+/**
+ *  删除节点
+ * @param selectedRows
+ */
+
+const handleDel = async ({ catId,attr_id }, actionRef) => {
+  Modal.confirm({
+    content: '此操作将永久删除该数据, 是否继续?',
+    onOk: async () => {
+      try {
+        await delAttributes({catId,attr_id});
+        message.success('删除成功');
+        actionRef.current.reload();
+        return true;
+      } catch (error) {
+        console.error(error)
+        return false;
+      }
+    },
+  });
+};
   const getCatData = async () => {
     try {
       const res = await queryCategoriesListAll();
       setCategoryData(res.data);
     } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const onExpand = async (expanded, record) => {
-    if (expanded) {
-      try {
-        setCatAttrParmas(res.data.attr_vals);
-      } catch (error) {
-        console.log(error)
-      }
+      console.error(error);
     }
   };
 
@@ -147,51 +136,57 @@ const TableList = () => {
     }
   };
   const onTabChange = (key) => {
-    console.log(key);
-    console.log(activeKey);
+    actionRef.current && actionRef.current.reload()
+    // console.log(key);
+    // console.log(activeKey);
   };
   const onTabClick = (key) => {
-    setActiveKey(key);
+    setAttr_sel(key);
   };
   const onAttrInputConfirm = async (e, record) => {
+    let catAttrParmas = record.attr_vals ? record.attr_vals.split(',') : []
     try {
       const { value } = e.target;
       if(value==='')return
-      if(catAttrParmas && catAttrParmas.split(',').find((item)=>item===value)){
+      if(catAttrParmas.find((item)=>item===value)){
         return message.error('已存在该属性了')
       }
+      catAttrParmas.push(value)
       const reqData = {
         catId,
         attrId: record.attr_id,
         attr_name: record.attr_name,
-        attr_vals: `${catAttrParmas ? catAttrParmas+',' : ''}${value}`,
-        attr_sel: 'many',
+        attr_vals: catAttrParmas.join(','),
+        attr_sel,
       };
       await putAttrParmas(reqData);
-      setCatAttrParmas(reqData.attr_vals)
+      setAddTag(true)
+      actionRef.current && actionRef.current.reload()
     } catch (error) {
       console.error(error);
     }
   };
   const onTagClose = async (value,record,actionRef) => {
     try {
-      let catAttrParmasTemp = catAttrParmas
-      const values = catAttrParmasTemp.split(',').filter((item) => item !== value);
+      let catAttrParmas = record.attr_vals ? record.attr_vals.split(',') : []
+      const values = catAttrParmas.filter((item) => item !== value);
       const reqData = {
         catId,
         attrId: record.attr_id,
         attr_name: record.attr_name,
         attr_vals: values.join(','),
-        attr_sel: 'many',
+        attr_sel,
       };
     await putAttrParmas(reqData)
-    setCatAttrParmas(reqData.attr_vals)
-    // actionRef.current && actionRef.current.reload()
+    actionRef.current && actionRef.current.reload()
     } catch (error) {
       console.log(error)
     }
     
   };
+  const onClickAddTag = ()=>{
+    setAddTag(false)
+  }
   useEffect(() => {
     getCatData();
   }, []);
@@ -223,10 +218,12 @@ const TableList = () => {
           );
         })}
         <div style={{ width: `100px` }}>
-          <Input
+          {
+            !addTag && <Input
             size="small"
             allowClear={false}
             placeholder="添加属性"
+            defaultValue=""
             onBlur={(e) => {
               onAttrInputConfirm(e, record);
             }}
@@ -234,6 +231,8 @@ const TableList = () => {
               onAttrInputConfirm(e, record);
             }}
           />
+          }
+          {addTag && <Tag onClick={onClickAddTag} style={{cursor:'pointer'}}> <PlusOutlined /> 添加属性</Tag>}
         </div>
       </Space>
     );
@@ -254,9 +253,9 @@ const TableList = () => {
         </Space>
       </div>
       <Spin tip="当选择第三级分类显示" spinning={modal} indicator={<></>}>
-        <Tabs activeKey={activeKey} onChange={onTabChange} onTabClick={onTabClick}>
-          <TabPane tab="动态参数" key="1"></TabPane>
-          <TabPane tab="静态属性" key="2"></TabPane>
+        <Tabs activeKey={attr_sel} onChange={onTabChange} onTabClick={onTabClick}>
+          <TabPane tab="动态参数" key="many"></TabPane>
+          <TabPane tab="静态属性" key="only"></TabPane>
         </Tabs>
         {!modal && (
           <ProTable
@@ -268,15 +267,12 @@ const TableList = () => {
               </Button>,
             ]}
             request={(params, sorter, filter) =>
-              queryAttributesList({ catId, ...{ sel: 'many' }, ...params, sorter, filter })
+              queryAttributesList({ catId, ...{ sel: attr_sel }, ...params, sorter, filter })
             }
             columns={columns}
             search={false}
             expandable={{
-              expandedRowRender: (record) => expandedRowContent({ record,actionRef }),
-              onExpand: (expanded, record) => {
-                onExpand(expanded, record);
-              },
+              expandedRowRender: (record) => expandedRowContent({ record,actionRef })
             }}
           />
         )}
