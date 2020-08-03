@@ -2,91 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Tree } from 'antd';
 import { queryPermissonTree } from '../service';
 
-const treeData = [
-  {
-    title: '0-0',
-    key: '0-0',
-    children: [
-      {
-        title: '0-0-0',
-        key: '0-0-0',
-        children: [
-          {
-            title: '0-0-0-0',
-            key: '0-0-0-0',
-          },
-          {
-            title: '0-0-0-1',
-            key: '0-0-0-1',
-          },
-          {
-            title: '0-0-0-2',
-            key: '0-0-0-2',
-          },
-        ],
-      },
-      {
-        title: '0-0-1',
-        key: '0-0-1',
-        children: [
-          {
-            title: '0-0-1-0',
-            key: '0-0-1-0',
-          },
-          {
-            title: '0-0-1-1',
-            key: '0-0-1-1',
-          },
-          {
-            title: '0-0-1-2',
-            key: '0-0-1-2',
-          },
-        ],
-      },
-      {
-        title: '0-0-2',
-        key: '0-0-2',
-      },
-    ],
-  },
-  {
-    title: '0-1',
-    key: '0-1',
-    children: [
-      {
-        title: '0-1-0-0',
-        key: '0-1-0-0',
-      },
-      {
-        title: '0-1-0-1',
-        key: '0-1-0-1',
-      },
-      {
-        title: '0-1-0-2',
-        key: '0-1-0-2',
-      },
-    ],
-  },
-  {
-    title: '0-2',
-    key: '0-2',
-  },
-];
-
-const formatData = (n) => {};
-
 const SetPermissonFrom = (props) => {
   const {
     values,
     perModalVisible,
     onCancel: handlePerModalVisible,
-    onSubmit: handleSetPer,
+    onSubmit: handleSubmit,
   } = props;
-  const [permissonTree, setPermissonTree] = useState([]);
-  const [checkedKeys, setCheckedKeys] = useState([]);
-  const [selectedKeys, setSelectedKeys] = useState([]);
+  const [permissonTree, setPermissonTree] = useState(null);
   const [autoExpandParent, setAutoExpandParent] = useState(true);
-  console.log(values);
+  const [checkAttrs, setCheckAttrs] = useState(null)
 
   useEffect(() => {
     queryPermissonTree().then((res) => {
@@ -107,39 +32,54 @@ const SetPermissonFrom = (props) => {
           });
         }
       });
+      let checkAttrsTemp = []
+      values.checkedKeys = []
+      values.children.forEach((item1) => {
+        values.checkedKeys.push(item1.id)
+        if (item1.children && item1.children.length > 0) {
+          item1.children.forEach((item2) => {
+              values.checkedKeys.push(item2.id)
+            if (item2.children && item2.children.length > 0) {
+              item2.children.forEach((item3) => {
+                values.checkedKeys.push(item3.id)
+                checkAttrsTemp.push(item3.id)
+              });
+            }
+          });
+        }
+      });
+      setCheckAttrs(checkAttrsTemp)
       setPermissonTree(data);
       return () => {};
     });
   },[]);
 
-  const onCheck = (checkedKeys) => {
-    console.log('onCheck', checkedKeys);
-    setCheckedKeys(checkedKeys);
+  const onCheck = (checkedKeys,e) => {
+    console.log(e)
+    values.checkedKeys = [...checkedKeys,...e.halfCheckedKeys]
   };
-
-  const onSelect = (selectedKeys, info) => {
-    console.log('onSelect', info);
-    setSelectedKeys(selectedKeys);
-  };
-
   const renderContent = () => {
     return (
-      <Tree
+      <>
+      {
+        permissonTree && checkAttrs && <Tree
         height={560}
         checkable
+        defaultCheckedKeys={checkAttrs}
         autoExpandParent={autoExpandParent}
         onCheck={onCheck}
-        checkedKeys={checkedKeys}
-        onSelect={onSelect}
-        selectedKeys={selectedKeys}
         treeData={permissonTree}
       />
+      }
+      </>
     );
   };
   return (
     <>
       <Modal
         width={640}
+        height={600}
+        virtual
         bodyStyle={{
           padding: '32px 40px 48px',
         }}
@@ -152,7 +92,7 @@ const SetPermissonFrom = (props) => {
           handlePerModalVisible();
         }}
         onOk={() => {
-          handleSubmit();
+          handleSubmit(values);
         }}
       >
         {renderContent()}

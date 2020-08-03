@@ -1,13 +1,13 @@
-import {  PlusOutlined } from '@ant-design/icons';
-import {Table, Button, message, Divider, Modal } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Row, Col,Tag, Space,Table, Button, message, Divider, Modal } from 'antd';
 import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
 import UpdateForm from './components/UpdateForm';
 import SetPermissonForm from './components/setPermissonForm';
-import { queryRoleList,addRole,putRole,delRole } from './service';
-
+import { queryRoleList, addRole, putRole, delRole,setRolesPer,delRolePer } from './service';
+import style from './style.less'
 
 /**
  * 添加节点
@@ -64,12 +64,13 @@ const handleDel = async ({ id }, actionRef) => {
  * @param id 用户id
  * @param rid 角色id
  */
-const handleSetPer = async ({ id, rid }) => {
+const handleSetPer = async ({ id, checkedKeys:rids }) => {
   try {
-    await setUserPer({ id, rid });
+    await setRolesPer({ id, rids:rids.join(',') });
     message.success('更新权限成功');
     return true;
   } catch (error) {
+    console.error(error)
     return false;
   }
 };
@@ -91,12 +92,12 @@ const TableList = () => {
       title: '角色名称',
       dataIndex: 'roleName',
       hideInSearch: true,
-      rules:[
+      rules: [
         {
           required: true,
-          message: '请输入角色名称'
-        }
-      ]
+          message: '请输入角色名称',
+        },
+      ],
     },
     {
       title: '角色描述',
@@ -137,9 +138,55 @@ const TableList = () => {
         </>
       ),
     },
-  ]
+  ];
+  const onTabClose = async(rid,pid)=>{
+    try {
+      await delRolePer(rid,pid)
+      actionRef.current && actionRef.current.reload()
+    } catch (error) {
+        console.error(error)
+    }
+  }
+  const expandedContent = (record) => {
+    return (
+      <>
+      {
+        record.children.map(item1=>{
+          return <Row
+          align="middle"
+          justify="center"
+          key={item1.id}
+            >
+              <Col span={5} push={2}>
+                <Tag color="cyan" closable onClose={()=>{onTabClose(record.id,item1.id)}}>{item1.authName}</Tag>
+              </Col>
+              <Col span={19}>
+                {item1.children.map(item2=>{
+                  return <Row
+                  key={item2.id}
+                  align="middle"
+                  justify="center"
+                >
+                  <Col span={6} push={2}>
+                    <Tag color="green" closable onClose={()=>{onTabClose(record.id,item2.id)}}>{item2.authName }</Tag>
+                  </Col>
+                  <Col span={16} push={2}>
+                    {
+                      item2.children.map(item3=>{
+                        return <Tag color="gold" key={item3.id} closable onClose={()=>{onTabClose(record.id,item3.id)}} style={{marginBottom:`10px`}}>{ item3.authName}</Tag>
+                      })
+                    }
+                  </Col>
+                </Row>
+                })}
+              </Col>
+            </Row> 
+        })
+      }
+      </>
+    );
+  };
 
-  
   return (
     <PageHeaderWrapper>
       <ProTable
@@ -152,14 +199,14 @@ const TableList = () => {
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        pagination={
-          false
-        }
+        pagination={false}
         search={false}
         expandable={{
           childrenColumnName: [],
-          expandedRowRender: record => <p style={{ margin: 0 }}>{record.description}</p>,
-          rowExpandable: record => record.name !== 'Not Expandable',
+          expandedRowRender: (record) => expandedContent(record),
+          rowExpandable: () => {
+            return true;
+          },
         }}
       />
       {createModalVisible && (
@@ -223,7 +270,7 @@ const TableList = () => {
             handlePerModalVisible(false);
             setFormValues({});
           }}
-         />
+        />
       )}
     </PageHeaderWrapper>
   );

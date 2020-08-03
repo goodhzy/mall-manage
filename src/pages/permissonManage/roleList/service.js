@@ -19,7 +19,7 @@ export async function putRole({ id, ...restparmas }) {
   return request(`roles/${id}`, {
     method: 'PUT',
     data: restparmas,
-  });
+  })
 }
 
 export async function delRole(id) {
@@ -30,4 +30,22 @@ export async function delRole(id) {
 
 export async function queryPermissonTree() {
   return request('rights/tree');
+}
+
+export async function setRolesPer({id,...restparmas}){
+  return request(`roles/${id}/rights`,{
+    method: 'POST',
+    data:restparmas
+  })
+}
+
+/**
+ * 
+ * @param {*} rid 角色id
+ * @param {*} pid 权限id
+ */
+export async function delRolePer(rid,pid){
+  return request(`roles/${rid}/rights/${pid}`,{
+    method:'DELETE'
+  })
 }
