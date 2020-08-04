@@ -30,3 +30,10 @@ export async function putGoods({goods_id,...restparmas}){
 export async function queryGoodsDec(goods_id){
   return request(`goods/${goods_id}`)
 }
+
+export async function addGoods(parmas){
+  return request('goods',{
+    method: 'POST',
+    data:parmas
+  })
+}

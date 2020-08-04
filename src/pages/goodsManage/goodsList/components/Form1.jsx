@@ -18,8 +18,7 @@ const Form1 = (props) => {
   };
   const next = async () => {
     try {
-        // const fieldsValue = await form.validateFields()
-        const fieldsValue = form.getFieldsValue()
+        const fieldsValue = await form.validateFields()
         handleNext(1,fieldsValue)
     } catch (error) {
         console.error(error)
@@ -41,7 +40,7 @@ const Form1 = (props) => {
           },
         ]}
       >
-        <Input />
+        <Input.TextArea autoSize={{ minRows: 2, maxRows: 6 }} style={{ width: `250px` }} />
       </Form.Item>
       <Form.Item
         name="goods_price"
@@ -53,11 +52,11 @@ const Form1 = (props) => {
           },
         ]}
       >
-        <InputNumber />
+        <InputNumber style={{ width: `250px` }} />
       </Form.Item>
       <Form.Item
         name="goods_weight"
-        label="商品重量"
+        label="商品重量(kg)"
         rules={[
           {
             required: true,
@@ -65,7 +64,7 @@ const Form1 = (props) => {
           },
         ]}
       >
-        <InputNumber />
+        <InputNumber style={{ width: `250px` }} />
       </Form.Item>
       <Form.Item
         name="goods_number"
@@ -77,7 +76,7 @@ const Form1 = (props) => {
           },
         ]}
       >
-        <InputNumber />
+        <InputNumber style={{ width: `250px` }} />
       </Form.Item>
       <Form.Item
         name="goods_cat"

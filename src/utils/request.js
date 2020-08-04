@@ -60,6 +60,9 @@ request.interceptors.response.use(
     }else{
       if(res && res.meta && res.meta.status >= 400){
         message.error(res.meta.msg)
+        if(res.meta.msg === '无效token'){
+          history.replace('/user/login')
+        }
         return Promise.reject(response.data);
       }
     }
