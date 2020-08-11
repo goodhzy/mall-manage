@@ -47,14 +47,14 @@ export default defineConfig({
           routes: [
             {
               path: '/',
-              redirect: '/welcome',
+              redirect: '/userManage/userList',
             },
-            {
-              path: '/welcome',
-              name: 'welcome',
-              icon: 'smile',
-              component: './Welcome',
-            },
+            // {
+            //   path: '/welcome',
+            //   name: 'welcome',
+            //   icon: 'smile',
+            //   component: './Welcome',
+            // },
             {
               path: '/admin',
               name: 'admin',
@@ -71,12 +71,12 @@ export default defineConfig({
                 },
               ],
             },
-            {
-              name: 'list.table-list',
-              icon: 'table',
-              path: '/list',
-              component: './ListTableList',
-            },
+            // {
+            //   name: 'list.table-list',
+            //   icon: 'table',
+            //   path: '/list',
+            //   component: './ListTableList',
+            // },
             {
               name: '用户管理',
               icon: 'table',
@@ -137,6 +137,19 @@ export default defineConfig({
                   icon: 'table',
                   path: '/goodsManage/goodsAdd',
                   component: './goodsManage/goodsList/components/CreateForm'
+                }
+              ]
+            },
+            {
+              name: '数据统计',
+              icon: 'table',
+              path: '/statistics',
+              routes:[
+                {
+                  name: '数据报表',
+                  icon: 'table',
+                  path: '/statistics/report',
+                  component: './statistics/report'
                 }
               ]
             },

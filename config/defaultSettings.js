@@ -10,7 +10,7 @@ const proSettings = {
   menu: {
     locale: true,
   },
-  title: 'Ant Design Pro',
+  title: '最商城管理系统',
   pwa: false,
   iconfontUrl: '',
 };

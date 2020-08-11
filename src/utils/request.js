@@ -25,8 +25,8 @@ const codeMessage = {
   504: '网关超时。',
 };
 
-const devUrl = 'http://127.0.0.1:8888/api/private/v1/'
-const prdUrl = 'https://yystudy.top:8888/api/private/v1/'
+const devUrl = 'http://127.0.0.1:7777/api/private/v1/'
+const prdUrl = 'http://yystudy.top:7777/api/private/v1/'
 
 const request = axios.create({
   baseURL: process.env.NODE_ENV === 'development' ? devUrl : prdUrl,
@@ -39,7 +39,7 @@ const request = axios.create({
 request.interceptors.request.use(
   (config) => {
     if (localStorage.getItem('token')) {
-      config.headers.Authorization = `${  localStorage.getItem('token')}`;
+      config.headers.Authorization = `${localStorage.getItem('token')}`;
     }
     return config;
   },
